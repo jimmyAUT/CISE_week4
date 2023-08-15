@@ -1,4 +1,5 @@
 import Link from "next/link";
+// <Link> direct to different route at the same domin
 
 export default function Home() {
   return (
