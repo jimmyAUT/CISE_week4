@@ -1,18 +1,4 @@
 /* eslint-disable prettier/prettier */
-// import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-// import { Document } from 'mongoose';
-
-// @Schema()
-// export class Article extends Document {
-//   @Prop({ required: true })
-//   title: string;
-
-//   @Prop({ required: true })
-//   des: string;
-// }
-
-// export const ArticleSchema = SchemaFactory.createForClass(Article);
-
 import * as mongoose from 'mongoose';
 
 export const ArticleSchema = new mongoose.Schema({
