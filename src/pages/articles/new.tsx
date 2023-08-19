@@ -1,5 +1,7 @@
 import { FormEvent, useState } from "react";
 import formStyles from "../../../styles/Form.module.scss";
+import { useRouter } from "next/router";
+import { createArticle } from "@/api/articles";
 
 const NewDiscussion = () => {
   const [title, setTitle] = useState("");
@@ -7,23 +9,47 @@ const NewDiscussion = () => {
   const [source, setSource] = useState("");
   const [pubYear, setPubYear] = useState<number>(0);
   const [doi, setDoi] = useState("");
-  const [summary, setSummary] = useState("");
-  const [linkedDiscussion, setLinkedDiscussion] = useState("");
+  // const [summary, setSummary] = useState("");
+  // const [linkedDiscussion, setLinkedDiscussion] = useState("");
+  const [claim, setClaim] = useState("");
+  const [evidence, setEvidence] = useState("");
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const authorsString = authors.join(", "); //connect the authors by ',' and turn array to string
 
-    console.log(
-      JSON.stringify({
-        title,
-        authors,
-        source,
-        publication_year: pubYear,
-        doi,
-        summary,
-        linked_discussion: linkedDiscussion,
-      })
-    );
+    // console.log(
+    //   JSON.stringify({
+    //     title,
+    //     authors,
+    //     source,
+    //     publication_year: pubYear,
+    //     doi,
+    //     claim,
+    //     evidence,
+    //   })
+    // );
+    const atricleData = JSON.stringify({
+      title,
+      authors: authorsString,
+      source,
+      publication_year: pubYear,
+      doi,
+      claim,
+      evidence,
+    });
+
+    try {
+      const response = await createArticle(atricleData);
+
+      console.log("Article created:", response.data);
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const router = useRouter();
+      router.push("/articles"); // direct to /articles page
+    } catch (error) {
+      console.error("Error creating article:", error);
+    }
   };
 
   // Some helper methods for the authors array
@@ -134,12 +160,19 @@ const NewDiscussion = () => {
           }}
         />
 
-        <label htmlFor="summary">Summary:</label>
+        {/* <label htmlFor="summary">Summary:</label>
         <textarea
           className={formStyles.formTextArea}
           name="summary"
           value={summary}
           onChange={(event) => setSummary(event.target.value)}
+        /> */}
+        <label htmlFor="claim">Claim:</label>
+        <textarea
+          className={formStyles.formTextArea}
+          name="claim"
+          value={claim}
+          onChange={(event) => setClaim(event.target.value)}
         />
 
         <button className={formStyles.formItem} type="submit">

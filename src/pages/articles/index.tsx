@@ -1,6 +1,7 @@
-import { GetStaticProps, NextPage } from "next";
+import { GetStaticProps, NextPage, GetServerSideProps } from "next";
 import SortableTable from "../../components/table/SortableTable";
-import data from "../../utils/dummydata";
+// import data from "../../utils/dummydata";
+import { getArticles } from "@/api/articles";
 
 interface ArticlesInterface {
   id: string;
@@ -36,24 +37,64 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
-  // Map the data to ensure all articles have consistent property names
-  const articles = data.map((article) => ({
-    id: article.id ?? article._id,
-    title: article.title,
-    authors: article.authors,
-    source: article.source,
-    pubyear: article.pubyear,
-    doi: article.doi,
-    claim: article.claim,
-    evidence: article.evidence,
-  }));
+// export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
+//   // Map the data to ensure all articles have consistent property names
+//   const articles = data.map((article) => ({
+//     id: article.id ?? article._id,
+//     title: article.title,
+//     authors: article.authors,
+//     source: article.source,
+//     pubyear: article.pubyear,
+//     doi: article.doi,
+//     claim: article.claim,
+//     evidence: article.evidence,
+//   }));
 
-  return {
-    props: {
-      articles,
-    },
-  };
+//   return {
+//     props: {
+//       articles,
+//     },
+//   };
+// };
+
+export const getServerSideProps: GetStaticProps<ArticlesProps> = async (_) => {
+  try {
+    const articles = await getArticles();
+    articles.map(
+      (article: {
+        id: any;
+        _id: any;
+        title: any;
+        authors: any;
+        source: any;
+        pubyear: any;
+        doi: any;
+        claim: any;
+        evidence: any;
+      }) => ({
+        id: article.id ?? article._id,
+        title: article.title,
+        authors: article.authors,
+        source: article.source,
+        pubyear: article.pubyear,
+        doi: article.doi,
+        claim: article.claim,
+        evidence: article.evidence,
+      })
+    );
+    return {
+      props: {
+        articles,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching articles:", error);
+    return {
+      props: {
+        articles: [{ title: "No article found" }],
+      },
+    };
+  }
 };
 
 export default Articles;
